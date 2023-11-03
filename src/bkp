@@ -16,11 +16,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import SuplierModalComp from "./components/SuplierModalComp";
-
-import { SuplierUsecase } from "./shared/suplier_usecase";
-
-const clientUsecase = new SuplierUsecase('http://localhost:4444')
+import ModalComp from "./components/ModalComp";
 
 const App = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,21 +29,19 @@ const App = () => {
   });
 
   useEffect(() => {
-    async function fetchData() {
-      const db_costumer = await clientUsecase.index();
-      setData(db_costumer);
-    }
+    const db_costumer = localStorage.getItem("cad_cliente")
+      ? JSON.parse(localStorage.getItem("cad_cliente"))
+      : [];
 
-    fetchData()
-
+    setData(db_costumer);
   }, [setData]);
 
-  const handleRemove = async (id_fornecedor) => {
-    var result = await clientUsecase.delete(id_fornecedor)
-    if(result.httpStatus == 200) {
-      const newArray = data.filter((item) => item.id_fornecedor !== id_fornecedor);
-      setData(newArray);
-    }
+  const handleRemove = (email) => {
+    const newArray = data.filter((item) => item.email !== email);
+
+    setData(newArray);
+
+    localStorage.setItem("cad_cliente", JSON.stringify(newArray));
   };
 
   return (
@@ -60,7 +54,7 @@ const App = () => {
     >
       <Box maxW={800} w="100%" h="100vh" py={10} px={2}>
         <Button colorScheme="blue" onClick={() => [setDataEdit({}), onOpen()]}>
-          Novo Cadastro
+          NOVO CADASTRO
         </Button>
 
         <Box overflowY="auto" height="100%">
@@ -68,25 +62,25 @@ const App = () => {
             <Thead>
               <Tr>
                 <Th maxW={isMobile ? 5 : 100} fontSize="20px">
-                  Razão Social
+                  Nome
                 </Th>
                 <Th maxW={isMobile ? 5 : 100} fontSize="20px">
-                  CPF/CNPJ
+                  E-Mail
                 </Th>
                 <Th p={0}></Th>
                 <Th p={0}></Th>
               </Tr>
             </Thead>
             <Tbody>
-              {data.map(({ razao, cpf_cnpj, contato, logradouro, cidade, uf, id_fornecedor }, index) => (
+              {data.map(({ name, email }, index) => (
                 <Tr key={index} cursor="pointer " _hover={{ bg: "gray.100" }}>
-                  <Td maxW={isMobile ? 5 : 100}>{razao}</Td>
-                  <Td maxW={isMobile ? 5 : 100}>{cpf_cnpj}</Td>
+                  <Td maxW={isMobile ? 5 : 100}>{name}</Td>
+                  <Td maxW={isMobile ? 5 : 100}>{email}</Td>
                   <Td p={0}>
                     <EditIcon
                       fontSize={20}
                       onClick={() => [
-                        setDataEdit({ razao, cpf_cnpj, contato, logradouro, cidade, uf, index, id_fornecedor }),
+                        setDataEdit({ name, email, index }),
                         onOpen(),
                       ]}
                     />
@@ -94,7 +88,7 @@ const App = () => {
                   <Td p={0}>
                     <DeleteIcon
                       fontSize={20}
-                      onClick={() => handleRemove(id_fornecedor)}
+                      onClick={() => handleRemove(email)}
                     />
                   </Td>
                 </Tr>
@@ -104,14 +98,13 @@ const App = () => {
         </Box>
       </Box>
       {isOpen && (
-        <SuplierModalComp
+        <ModalComp
           isOpen={isOpen}
           onClose={onClose}
           data={data}
           setData={setData}
           dataEdit={dataEdit}
           setDataEdit={setDataEdit}
-          usecase={clientUsecase}
         />
       )}
     </Flex>
