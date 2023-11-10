@@ -24,7 +24,7 @@ const SuplierModalComp = ({ data, setData, dataEdit, isOpen, onClose, usecase })
   SuplierModalComp.propTypes = {
     data: PropTypes.any,
     setData: PropTypes.func,
-    dataEdit: PropTypes.func,
+    dataEdit: PropTypes.object,
     isOpen: PropTypes.bool,
     onClose: PropTypes.func,
     usecase: PropTypes.instanceOf(SuplierUsecase)

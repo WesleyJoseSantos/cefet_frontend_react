@@ -24,7 +24,7 @@ const UserModalComp = ({ data, setData, dataEdit, isOpen, onClose, usecase }) =>
   UserModalComp.propTypes = {
     data: PropTypes.any,
     setData: PropTypes.func,
-    dataEdit: PropTypes.func,
+    dataEdit: PropTypes.object,
     isOpen: PropTypes.bool,
     onClose: PropTypes.func,
     usecase: PropTypes.instanceOf(ClientUsecase)
